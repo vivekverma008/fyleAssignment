@@ -33,6 +33,40 @@ body {
     min-height: 100vh;
 }
 
+
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: #FF3D00;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+
+    
+    display: none;
+
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+
+
+
+
+
+
+
+
+
 .bold{
     font-weight: bolder;
 }
@@ -125,7 +159,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+
     align-items: center;
+    justify-content: center;
+
+
 }
 
 
@@ -133,7 +171,7 @@ body {
     background-color: var(--light-card_bg-color);
     color: var(--dark-bg-color);
     min-height: 100px;
-    width: 90%;
+    width: 80%;
     padding: 10px;
     margin: var(--margin-base);
     display: flex;
@@ -220,3 +258,62 @@ body {
 /* .avatar{
     
 } */
+
+
+
+
+
+
+
+@media only screen and (min-width: 480px) {
+
+    .repo_box{
+        padding: 0rem 2rem;
+    }
+    
+}
+
+@media only screen and (min-width: 768px) {
+    .repo_box{
+        display: grid;        
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 50px;
+
+        align-items: center;
+
+        padding: 0rem 4rem;
+    }
+    
+    .card_mobile{
+        width: 100%;
+    }
+
+    
+}
+@media only screen and (min-width: 1024px) {
+    .repo_box{
+        padding: 0rem 5rem;
+    }
+    
+}
+@media only screen and (min-width: 1200px) {
+    
+}
+
+
+
+
+
+
+
+
+
+/**? Common Media Query breakpoints :
+
+*_        Breakpoint       |       Description             |
+**        <481px           |    Mobile devices             |
+**      481px — 768px      |    iPads, Tablets             |
+**      769px — 1024px     |    Small screens, laptops     |
+**      1025px — 1200px    |    Desktops, large screens    |
+**      1201px and greater |    Extra large screens, TV    |
+**/
