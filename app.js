@@ -1,3 +1,22 @@
+
+
+var linkParser = async (linkHeader) => {
+    const linkObject = {};
+
+    const entries = linkHeader.split(',');
+
+    for (const entry of entries) {
+        const [url, rel] = entry.split(';').map(part => part.trim());
+        const urlValue = url.slice(1, -1);
+        const relation = rel.split('=')[1].slice(1, -1);
+        linkObject[relation] = urlValue;
+    }
+
+    return linkObject;
+  }
+
+
+
 async function fetchUser(username) {
     const loader = document.querySelector('.loader'); 
     const remLoad = document.querySelector('.rem_load'); 
@@ -5,8 +24,27 @@ async function fetchUser(username) {
     remLoad.style.display = 'none'; 
     
     try{
+
+
+        let page = document.querySelector('.pagination .active').innerHTML;
+        page = (page ? page:1);
+        let perPage = document.querySelector('.per-Page').value;
+        console.log(perPage);
+        if(!perPage)perPage = 10;
+
+        const timeoutId = setTimeout(()=>{
+            remLoad.style.display = 'block';
+            loader.style.display = 'none'
+            throw new Error('timeOUt');
+        },5000)
+
+        console.log(perPage , page);
+
         const res = await fetch(`https://api.github.com/users/${username}`);
-        const repos = await fetch(`https://api.github.com/users/${username}/repos`);
+        const repos = await fetch(`https://api.github.com/users/${username}/repos?page=${page}&per_page=${perPage}`);
+
+        clearTimeout(timeoutId);
+
 
         if(res.status === 404 || repos.status === 404){
             throw new Error('User not found');
@@ -14,8 +52,18 @@ async function fetchUser(username) {
         
         const data = await res.json();
         data.repos = await repos.json();
+        const linkHeader = repos.headers.get('Link');
 
-
+        if(linkHeader){
+            console.log(linkHeader);
+            const links = await linkParser(linkHeader);
+            console.log(links);
+            data.links = links;
+        }
+        console.log(data.repos);
+        const numberOfPages = data.repos.length/perPage;
+        data.numberOfPages = numberOfPages;
+        console.log(numberOfPages);
         loader.style.display = 'none';
         remLoad.style.display = 'block'; 
         
@@ -75,11 +123,11 @@ const getAnotherUser = async function (event) {
     repo_container.innerHTML = '';
     
     repos.forEach((repo, ind) => {
-        console.log(repo.topics);
+        // console.log(repo.topics);
         var repoDiv = document.createElement("div");
         repoDiv.className = "border card_mobile";
         repoDiv.id = `${repo.name}-${ind}`;
-        console.log(repo.topics);
+        // console.log(repo.topics);
         repoDiv.innerHTML = ` 
                 <div class="heading margin">${repo.name}</div>
                 ${!repo.description ? ``: `<div class="margin description">${repo.description }</div>`}
@@ -87,7 +135,7 @@ const getAnotherUser = async function (event) {
                 <ul class="topic_container list_style_none">
                    
                     ${repo.topics.map((topic)=>{
-                       return  ` <li class="topics margin" id= '${repo.name}-${ind}'>${topic}</li>`
+                       return  `<li class="topics margin" id= '${repo.name}-${ind}'>${topic}</li>`
                     })}
                   
                 
@@ -98,7 +146,9 @@ const getAnotherUser = async function (event) {
         repo_container.appendChild(repoDiv);
     });
 
-
+    console.log('links ', data.links)
+    const pages = document.querySelector('.pagination');
+    
 
 }
 
